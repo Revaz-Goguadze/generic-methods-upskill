@@ -1,8 +1,10 @@
 # Generics Methods
 
-Intermediate level task for practice generic methods and interfaces.
-Estimated time to complete the task - 1.5h.
-The task requires .NET 6 SDK installed.
+Intermediate level task for practice generic methods and interfaces. 
+
+Estimated time to complete the task - 1.5h.  
+
+The task requires .NET 6 SDK installed.  
  
 ## Task Description
 
