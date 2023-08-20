@@ -17,6 +17,6 @@ namespace Comparators
         /// Zero if absolute value x equals absolute value y.
         /// Greater than zero if absolute value x is greater than absolute value y.
         /// </returns>
-        public int Compare(int x, int y) => throw new NotImplementedException();
+        public int Compare(int x, int y) => (int)(Math.Abs((long)x) - Math.Abs((long)y));
     }
 }

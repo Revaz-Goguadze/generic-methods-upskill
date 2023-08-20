@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using GenericMethods.Interfaces;
@@ -20,7 +21,21 @@ namespace GenericMethods
         /// <exception cref="ArgumentException">Thrown when array is empty.</exception>
         public static TSource[] Filter<TSource>(this TSource[] source, IPredicate<TSource> predicate)
         {
-            throw new NotImplementedException();
+            CheckArrayNull(source);
+            CheckObjectNull(predicate);
+            CheckArrayEmpty(source);
+
+            var result = new List<TSource>();
+            for (var i = 0; i < source.Length; i++)
+            {
+                var item = source[i];
+                if (predicate.IsMatch(item))
+                {
+                    result.Add(item);
+                }
+            }
+
+            return result.ToArray();
         }
 
         /// <summary>
@@ -35,7 +50,17 @@ namespace GenericMethods
         /// <exception cref="ArgumentException">Thrown when array is empty.</exception>
         public static TResult[] Transform<TSource, TResult>(this TSource[] source, ITransformer<TSource, TResult> transformer)
         {
-            throw new NotImplementedException();
+            CheckArrayNull(source);
+            CheckObjectNull(transformer);
+            CheckArrayEmpty(source);
+
+            var result = new List<TResult>();
+            foreach (var item in source)
+            {
+                result.Add(transformer.Transform(item));
+            }
+
+            return result.ToArray();
         }
 
         /// <summary>
@@ -51,7 +76,30 @@ namespace GenericMethods
         /// in array do not implement the <see cref="IComparable{T}"/>  interface.</exception>
         public static TSource[] SortBy<TSource>(this TSource[] source, IComparer<TSource> comparer)
         {
-            throw new NotImplementedException();
+            CheckArrayNull(source);
+            CheckObjectNull(comparer);
+            CheckArrayEmpty(source);
+
+            foreach (var item in source)
+            {
+                if (comparer is null && item is not IComparable<TSource>)
+                {
+                    throw new ArgumentNullException(nameof(comparer), "One or more elements in array do not implement the IComparable interface");
+                }
+            }
+
+            for (int i = 0; i < source.Length - 1; i++)
+            {
+                for (int j = 0; j < source.Length - i - 1; j++)
+                {
+                    if (comparer!.Compare(source[j], source[j + 1]) > 0)
+                    {
+                        Swap(ref source[j], ref source[j + 1]);
+                    }
+                }
+            }
+
+            return source;
         }
 
         /// <summary>
@@ -64,7 +112,21 @@ namespace GenericMethods
         /// <exception cref="ArgumentException">Thrown when array length equal to zero.</exception>
         public static TResult[] TypeOf<TResult>(this object[] source)
         {
-            throw new NotImplementedException();
+            CheckArrayNull(source);
+            CheckArrayEmpty(source);
+
+            var result = new List<TResult>();
+
+            for (var i = 0; i < source.Length; i++)
+            {
+                var item = source[i];
+                if (item is TResult results)
+                {
+                    result.Add(results);
+                }
+            }
+
+            return result.ToArray();
         }
 
         /// <summary>
@@ -77,7 +139,19 @@ namespace GenericMethods
         /// <exception cref="ArgumentException">Thrown when array length equal to zero.</exception>
         public static TSource[] Reverse<TSource>(this TSource[] source)
         {
-            throw new NotImplementedException();
+            CheckArrayNull(source);
+            CheckArrayEmpty(source);
+
+            int i = 0;
+            int j = source.Length - 1;
+            while (i < j)
+            {
+                Swap(ref source[i], ref source[j]);
+                i++;
+                j--;
+            }
+
+            return source;
         }
 
         /// <summary>
@@ -86,6 +160,48 @@ namespace GenericMethods
         /// <typeparam name="T">The type of parameters.</typeparam>
         /// <param name="left">First object.</param>
         /// <param name="right">Second object.</param>
-        internal static void Swap<T>(ref T left, ref T right) => throw new NotImplementedException();
+        internal static void Swap<T>(ref T left, ref T right) => (left, right) = (right, left);
+
+        /// <summary>
+        /// Check array for null.
+        /// </summary>
+        /// <typeparam name="T">Type.</typeparam>
+        /// <param name="array">Array for checking.</param>
+        /// <exception cref="ArgumentNullException">Null exception.</exception>
+        private static void CheckArrayNull<T>(T[] array)
+        {
+            if (array == null)
+            {
+                throw new ArgumentNullException(nameof(array), "Array is null");
+            }
+        }
+
+        /// <summary>
+        /// Check object for null.
+        /// </summary>
+        /// <typeparam name="T">Type.</typeparam>
+        /// <param name="obj">Object for checking.</param>
+        /// <exception cref="ArgumentNullException">Null exception.</exception>
+        private static void CheckObjectNull<T>(T obj)
+        {
+            if (obj == null)
+            {
+                throw new ArgumentNullException(nameof(obj), "Object is null");
+            }
+        }
+
+        /// <summary>
+        /// Check object for length.
+        /// </summary>
+        /// <typeparam name="T">Type.</typeparam>
+        /// <param name="array">Array for checking.</param>
+        /// <exception cref="ArgumentException">Argument exception.</exception>
+        private static void CheckArrayEmpty<T>(T[] array)
+        {
+            if (array.Length == 0)
+            {
+                throw new ArgumentException("Array is empty.", nameof(array));
+            }
+        }
     }
 }

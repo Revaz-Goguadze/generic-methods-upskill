@@ -17,6 +17,6 @@ namespace Comparators
         /// Zero if length of the string x equals length of the string y.
         /// Greater than zero if length of the string x is greater than length of the string y.
         /// </returns>
-        public int Compare(string? x, string? y) => throw new NotImplementedException();
+        public int Compare(string? x, string? y) => x?.Length.CompareTo(y?.Length) ?? -1;
     }
 }
